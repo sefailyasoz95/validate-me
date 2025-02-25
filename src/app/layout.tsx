@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseAnalyticsProvider } from "@/components/firebase-analytics-provider";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,10 +47,12 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <FirebaseAnalyticsProvider>
-            <Toaster />
-            {children}
-          </FirebaseAnalyticsProvider>
+          <Suspense fallback={null}>
+            <FirebaseAnalyticsProvider>
+              <Toaster />
+              {children}
+            </FirebaseAnalyticsProvider>
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>

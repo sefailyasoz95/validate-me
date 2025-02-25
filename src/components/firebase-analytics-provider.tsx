@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { initializeAnalytics } from "@/lib/firebase/config";
-import { logEvent, getAnalytics } from "firebase/analytics";
+import { logEvent } from "firebase/analytics";
 
 export function FirebaseAnalyticsProvider({
   children,
@@ -11,23 +11,26 @@ export function FirebaseAnalyticsProvider({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const initAnalytics = async () => {
-      const analytics = await initializeAnalytics();
-      if (analytics) {
-        // Log page view when the route changes
-        logEvent(analytics, "page_view", {
-          page_path: pathname,
-          page_location: window.location.href,
-          page_title: document.title,
-        });
+      try {
+        const analytics = await initializeAnalytics();
+        if (analytics) {
+          // Log page view when the route changes
+          logEvent(analytics, "page_view", {
+            page_path: pathname,
+            page_location: window.location.href,
+            page_title: document.title,
+          });
+        }
+      } catch (error) {
+        console.error("Error logging page view:", error);
       }
     };
 
     initAnalytics();
-  }, [pathname, searchParams]);
+  }, [pathname]); // Removed searchParams dependency
 
   return <>{children}</>;
 }
@@ -37,8 +40,12 @@ export const logAnalyticsEvent = async (
   eventName: string,
   eventParams?: Record<string, any>
 ) => {
-  const analytics = await initializeAnalytics();
-  if (analytics) {
-    logEvent(analytics, eventName, eventParams);
+  try {
+    const analytics = await initializeAnalytics();
+    if (analytics) {
+      logEvent(analytics, eventName, eventParams);
+    }
+  } catch (error) {
+    console.error(`Error logging event ${eventName}:`, error);
   }
 };
