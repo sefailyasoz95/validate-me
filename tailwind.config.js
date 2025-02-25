@@ -119,6 +119,34 @@ export default {
           "0%": { backgroundSize: "0% 100%" }, // Start empty
           "100%": { backgroundSize: "100% 100%" }, // Fully filled
         },
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        fadeInRight: {
+          "0%": { opacity: "0", transform: "translateX(-20px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(10px)" },
+          "100%": { transform: "translateY(0)" },
+        },
+        bounceSlight: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
+        },
+        pulseSlow: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        pulseSubtle: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.8" },
+        },
+        countUp: {
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -126,12 +154,17 @@ export default {
         blob: "blob 7s infinite",
         "gradient-x": "gradient-x 15s ease infinite",
         slideIn: "slideIn 0.5s ease-out",
-        fadeIn: "fadeIn 0.5s ease-in-out",
+        "fade-in": "fadeIn 0.5s ease-in-out",
         scaleUp: "scaleUp 0.3s ease-out",
         slideDown: "slideDown 0.4s ease-out",
-        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "pulse-subtle": "pulseSubtle 2s infinite",
         shimmer: "shimmer 2s linear infinite",
-        fillText: "fillText 3s ease-in-out forwards",
+        "fade-in-up": "fadeInUp 0.6s ease-out",
+        "fade-in-right": "fadeInRight 0.5s ease-out",
+        "slide-up": "slideUp 0.5s ease-out",
+        "bounce-subtle": "bounceSlight 2s infinite",
+        "pulse-slow": "pulseSlow 3s infinite",
+        "count-up": "countUp 1.5s ease-out forwards",
       },
     },
   },
