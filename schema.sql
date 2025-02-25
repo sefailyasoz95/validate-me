@@ -40,7 +40,6 @@ ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "authenticated_users_can_insert" 
 ON questions FOR INSERT 
 WITH CHECK (auth.uid() = user_id);
-
 -- Everyone can see questions
 CREATE POLICY "public_can_select" 
 ON questions FOR SELECT 
