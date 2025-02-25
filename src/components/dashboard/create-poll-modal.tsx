@@ -26,6 +26,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { logAnalyticsEvent } from "@/components/firebase-analytics-provider";
 
 const formSchema = z.object({
   text: z.string().min(5, "Question must be at least 5 characters"),
@@ -108,6 +109,13 @@ export function CreatePollModal() {
         console.error("Answers Error:", answersError);
         throw answersError;
       }
+
+      // Log the poll creation event
+      await logAnalyticsEvent("poll_created", {
+        user_id: session.user.id,
+        question_id: question.id,
+        answers_count: values.answers.length,
+      });
 
       toast.success("Poll created successfully!");
       form.reset();

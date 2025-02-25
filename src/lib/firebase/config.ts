@@ -1,36 +1,36 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getAnalytics, isSupported, logEvent } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
+// Include all required configuration values for client-side Firebase Analytics
 const firebaseConfig = {
-	apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-	authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-	projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-	storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-	messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-	appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-	measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const initFirebase = async () => {
-	if (!getApps().length) {
-		const app = initializeApp(firebaseConfig);
-		if (typeof window !== "undefined") {
-			if (await isSupported()) {
-				const analytics = getAnalytics(app);
-				// Initialize basic analytics tracking
-				logEvent(analytics, "app_initialized");
-				return { app, analytics };
-			}
-		}
-		return { app };
-	}
+// Initialize Firebase
+let app = undefined as any;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  console.error("Firebase initialization error", error);
+}
+
+// Initialize Analytics and export it
+export const initializeAnalytics = async () => {
+  if (!app || typeof window === "undefined") return null;
+
+  try {
+    const isAnalyticsSupported = await isSupported();
+    if (isAnalyticsSupported) {
+      return getAnalytics(app);
+    }
+  } catch (error) {
+    console.error("Analytics initialization error", error);
+  }
+  return null;
 };
 
-export const trackEvent = async (eventName: string, eventParams?: Record<string, any>) => {
-	if (typeof window !== "undefined") {
-		const { analytics } = (await initFirebase()) || {};
-		if (analytics) {
-			logEvent(analytics, eventName, eventParams);
-		}
-	}
-};
+export default app;

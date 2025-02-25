@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
+import { FirebaseAnalyticsProvider } from "@/components/firebase-analytics-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,8 +46,10 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Toaster />
-          {children}
+          <FirebaseAnalyticsProvider>
+            <Toaster />
+            {children}
+          </FirebaseAnalyticsProvider>
         </ThemeProvider>
       </body>
     </html>

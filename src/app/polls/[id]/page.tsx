@@ -8,6 +8,7 @@ import { Database } from "@/lib/types/supabase";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { logAnalyticsEvent } from "@/components/firebase-analytics-provider";
 
 type QuestionWithAnswers = Database["public"]["Tables"]["questions"]["Row"] & {
   answers: (Database["public"]["Tables"]["answers"]["Row"] & {
@@ -94,6 +95,13 @@ export default function PollPage() {
       } else {
         toast.success("Response submitted successfully");
         setHasResponded(true);
+
+        // Log analytics event
+        await logAnalyticsEvent("poll_answered", {
+          question_id: question?.id,
+          answer_id: answerId,
+          user_id: session?.user?.id || "anonymous",
+        });
       }
     } catch (error) {
       console.error("Error:", error);

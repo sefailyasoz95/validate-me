@@ -31,6 +31,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { logAnalyticsEvent } from "@/components/firebase-analytics-provider";
 
 // This is the client component wrapper that will be used in the server component
 export function ProfileCompletionWrapper({ userId }: { userId: string }) {
@@ -172,6 +173,15 @@ export function ProfileCompletionModal({
       setOpen(false);
       setIsProfileComplete(true);
       onComplete();
+
+      // Log the profile completion event
+      await logAnalyticsEvent("profile_completed", {
+        user_id: user.id,
+        has_birth_date: !!dateToSubmit,
+        has_gender: !!gender,
+        has_country: !!country,
+        has_city: !!city,
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
