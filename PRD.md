@@ -80,7 +80,6 @@ The ValidateMe is a web application that allows users to create and share polls 
 ## 6. Future Enhancements
 
 - **Analytics Dashboard**: View response trends and insights.
-- **Anonymous Polls**: Allow users to submit responses without authentication.
 - **Sharing & Embedding**: Enable easy sharing on social media or embedding in websites.
 
 ---

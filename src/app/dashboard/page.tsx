@@ -73,21 +73,21 @@ export default async function DashboardPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 animate-fade-in">
           {/* Welcome Section with Create Button */}
-          <section className="bg-gradient-to-br from-card to-card/80 rounded-lg p-8 shadow-lg border border-border hover:shadow-xl transition-all duration-300 animate-slide-up">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div>
-                <h1 className="text-3xl font-bold text-card-foreground mb-2 animate-fade-in">
+          <section className="bg-gradient-to-br from-card to-card/80 rounded-lg p-6 md:p-8 shadow-lg border border-border hover:shadow-xl transition-all duration-300 animate-slide-up">
+            <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
+              <div className="space-y-3 max-w-xl">
+                <h1 className="text-2xl md:text-3xl font-bold text-card-foreground animate-fade-in break-words">
                   Welcome back,{" "}
-                  <span className="text-primary">
+                  <span className="text-primary inline-block">
                     {session.user.user_metadata.name || session.user.email}
                   </span>
                 </h1>
-                <p className="text-muted-foreground max-w-xl animate-fade-in delay-100">
+                <p className="text-muted-foreground animate-fade-in delay-100">
                   Create polls to validate your business ideas and get valuable
                   feedback from your audience.
                 </p>
               </div>
-              <div className="animate-bounce-subtle">
+              <div className="animate-bounce-subtle shrink-0 mt-2 md:mt-0">
                 <CreatePollModal />
               </div>
             </div>
