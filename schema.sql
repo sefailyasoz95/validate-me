@@ -4,7 +4,11 @@ CREATE TABLE users (
     email TEXT UNIQUE NOT NULL,
     display_name TEXT,
     avatar_url TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    birth_date DATE,
+    gender TEXT,
+    country TEXT,
+    city TEXT
 );
 
 -- Questions Table

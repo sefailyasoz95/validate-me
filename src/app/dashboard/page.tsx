@@ -11,6 +11,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProfileCompletionWrapper } from "@/components/dashboard/profile-completion-modal";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -199,6 +200,7 @@ export default async function DashboardPage() {
           )}
         </div>
       </div>
+      <ProfileCompletionWrapper userId={session.user.id} />
     </main>
   );
 }

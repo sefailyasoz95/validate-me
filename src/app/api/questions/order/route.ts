@@ -1,60 +1,69 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
-	try {
-		const supabase = await createClient();
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createClient();
 
-		// Get auth session
-		const {
-			data: { session },
-		} = await supabase.auth.getSession();
+    // Get the current session
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-		if (!session) {
-			return new NextResponse("Unauthorized", { status: 401 });
-		}
+    // Get the ordered questions from the request
+    const orderedQuestions = await request.json();
 
-		// Get request body
-		const orderedQuestions = await request.json();
+    if (!Array.isArray(orderedQuestions) || orderedQuestions.length < 2) {
+      return NextResponse.json(
+        { error: "Invalid request format" },
+        { status: 400 }
+      );
+    }
 
-		// Validate request body
-		if (!Array.isArray(orderedQuestions) || orderedQuestions.length === 0) {
-			return new NextResponse("Invalid request body", { status: 400 });
-		}
+    // First, reset all next_question_id for these questions to avoid conflicts
+    const questionIds = orderedQuestions.map((q) => q.id);
+    await supabase
+      .from("questions")
+      .update({ next_question_id: null })
+      .in("id", questionIds)
+      .eq("user_id", session.user.id);
 
-		// Update question order
-		for (let i = 0; i < orderedQuestions.length; i++) {
-			const currentQuestion = orderedQuestions[i];
-			const nextQuestion = orderedQuestions[i + 1];
+    // Then set the next_question_id for each question
+    const updates = [];
+    for (let i = 0; i < orderedQuestions.length - 1; i++) {
+      const currentQuestion = orderedQuestions[i];
+      const nextQuestion = orderedQuestions[i + 1];
 
-			// Verify question ownership
-			const { data: questionData, error: questionError } = await supabase
-				.from("questions")
-				.select("user_id")
-				.eq("id", currentQuestion.id)
-				.single();
+      updates.push(
+        supabase
+          .from("questions")
+          .update({ next_question_id: nextQuestion.id })
+          .eq("id", currentQuestion.id)
+          .eq("user_id", session.user.id)
+      );
+    }
 
-			if (questionError || !questionData) {
-				return new NextResponse("Question not found", { status: 404 });
-			}
+    // Clear the next_question_id for the last question
+    updates.push(
+      supabase
+        .from("questions")
+        .update({ next_question_id: null })
+        .eq("id", orderedQuestions[orderedQuestions.length - 1].id)
+        .eq("user_id", session.user.id)
+    );
 
-			if (questionData.user_id !== session.user.id) {
-				return new NextResponse("Unauthorized", { status: 403 });
-			}
+    // Execute all updates
+    await Promise.all(updates);
 
-			const { error } = await supabase
-				.from("questions")
-				.update({ next_question_id: nextQuestion?.id || null })
-				.eq("id", currentQuestion.id);
-
-			if (error) {
-				throw error;
-			}
-		}
-
-		return new NextResponse("Questions order updated successfully", { status: 200 });
-	} catch (error) {
-		console.error("Error updating question order:", error);
-		return new NextResponse("Internal Server Error", { status: 500 });
-	}
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error updating question order:", error);
+    return NextResponse.json(
+      { error: "Failed to update question order" },
+      { status: 500 }
+    );
+  }
 }
